@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EShop.Domain.CreditCardProvider
 {
-    internal class CardNumberInvalidException : Exception
+    public class CardNumberInvalidException : Exception
     {
         public CardNumberInvalidException() { }
         public CardNumberInvalidException(string message) : base(message) { }

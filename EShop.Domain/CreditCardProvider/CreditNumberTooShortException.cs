@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EShop.Domain.CreditCardProvider
 {
-    internal class CreditNumberTooShortException : Exception
+    public class CreditNumberTooShortException : Exception
     {
         public CreditNumberTooShortException() { }
         public CreditNumberTooShortException(string message) : base(message) { }
