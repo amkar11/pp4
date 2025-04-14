@@ -1,14 +1,20 @@
-﻿using System.Text.RegularExpressions;
+﻿using EShop.Domain.CreditCardProvider;
+using System.Text.RegularExpressions;
 
 namespace EShop.Application
 {
-    public class CreditCardService
+    public class CreditCardService : ICreditCardService
     {
         public bool ValidateCard(string cardNumber)
         {
             cardNumber = cardNumber.Replace(" ", "");
+            cardNumber = cardNumber.Replace("-", "");
+            if (cardNumber.Length < 13)
+                throw new CreditNumberTooShortException("Numer karty musi mieć długość od 13 do 19 symboli!");
+            if (cardNumber.Length > 19)
+                throw new CreditNumberTooLongException("Numer karty musi mieć długość od 13 do 19 symboli!");
             if (!cardNumber.All(char.IsDigit))
-                return false;
+                throw new CardNumberInvalidException("Numer karty musi zawierać wyłącznie liczby!");
 
             int sum = 0;
             bool alternate = false;

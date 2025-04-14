@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-
+using EShop.Application;
+using EShop.Domain;
+using EShop.Domain.ProductProvidersExceptions;
+using System.Net;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace EShopService.Controllers
@@ -8,36 +11,64 @@ namespace EShopService.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
+        public readonly IProductService _productService;
+        public ProductController (IProductService productService) 
+        {
+            _productService = productService;
+        }
         // GET: api/<ValuesController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IActionResult ShowAllProducts()
         {
-            return new string[] { "value1", "value2" };
+            var products = _productService.ShowAllProducts();
+            return Ok(products);
         }
-
         // GET api/<ValuesController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IActionResult GetProductById(int id)
         {
-            return "value";
+            var product = _productService.GetProductById(id);
+            return Ok(product);
         }
 
         // POST api/<ValuesController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IActionResult AddProduct([FromBody] Product product)
         {
+            try
+            {
+                _productService.AddProduct(product);
+                return Created($"api/products/{product.Id}", product);
+            }
+            catch (ProductAllreadyExistsException ex)
+            {
+                return BadRequest(new { error = $"{ex.Message}", code = HttpStatusCode.BadRequest } );
+            }
+
         }
 
         // PUT api/<ValuesController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public IActionResult ChangeProduct(int id, [FromBody] Product product)
         {
+            if (id != product.Id) return BadRequest("Id you entered and actual product Id does not match!");
+            _productService.UpdateProduct(product);
+            return NoContent();
         }
 
         // DELETE api/<ValuesController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult DeleteProduct(int id)
         {
+            try
+            {
+                _productService.DeleteProduct(id);
+                return NoContent();
+            }
+            catch (ProductDoesNotExistException ex) 
+            {
+                return BadRequest(new { error = $"{ex.Message}", code = HttpStatusCode.BadRequest });
+            }
         }
     }
 }

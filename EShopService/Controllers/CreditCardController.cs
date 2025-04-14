@@ -16,21 +16,14 @@ namespace EShopService.Controllers
             _creditCardService = creditCardService;
         }
 
-        // GET: api/<CreditCardController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
         // GET api/<CreditCardController>/5
-        [HttpGet("{id}")]
+        [HttpGet]
         public IActionResult Get(string cardNumber)
         {
             try 
             {
                 _creditCardService.ValidateCard(cardNumber);
-                return Ok(new { message = "Everythins is ok!"});
+                return Ok(new { message = _creditCardService.GetCardType(cardNumber) });
             }
             catch (CreditNumberTooShortException ex)
             {
@@ -42,7 +35,7 @@ namespace EShopService.Controllers
             }
             catch (CardNumberInvalidException ex)
             {
-                return BadRequest(new { error = $"{ex.Message}", code = HttpStatusCode.BadRequest });
+                return StatusCode(406, new { message = $"{ex.Message}" });
             }
         }
 

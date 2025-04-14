@@ -13,4 +13,3 @@ namespace EShop.Domain.CreditCardProvider
         public CreditNumberTooLongException(string message, Exception innerException) : base(message, innerException) { }
     }
 }
-}
